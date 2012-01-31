@@ -2,9 +2,7 @@
 #define COPYDROID_H
 
 #include <QObject>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
+#include <QtNetwork>
 #include <QtXml>
 
 class CopyDroid : public QObject
@@ -15,13 +13,15 @@ public:
     CopyDroid();
     void PostMessage(const QString &message);
     void PostLinkRequest(const QString &uid);
-    QString getLinkRequestValue();
+    void PostLinkRequestStatus(const QString &uid, const QString &link_request_value);
 
 public slots:
     void ProcessLinkRequest();
+    void ProcessLinkRequestStatus();
 
 signals:
     void linkRequestValueChanged(QString value);
+    void linkRequestStatusChanged(bool status);
 
 private:
     QNetworkReply *reply;

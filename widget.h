@@ -17,19 +17,16 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
-    CopyDroid *copyDroid;
-    QClipboard *clipboard;
     explicit Widget(QWidget *parent = 0);
     ~Widget();
-    void testSQlite();
+    CopyDroid *copyDroid;
+    QClipboard *clipboard;
+    void createTable();
 
 public slots:
-    void testOnChange();
-    void testAction();
-    void copySlot();
-    void modeTwo();
-    void modeThree();
+    void onDataChanged();
     void addDevice();
+
 private:
     Ui::Widget *ui;
 };
