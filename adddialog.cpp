@@ -5,7 +5,6 @@ AddDialog::AddDialog(QWidget *parent) :
     QDialog(parent)
 {
     linkRequestStatus = false;
-    count = 0;
     infoLabel = new QLabel("Fill in the code on the Android device you want to connect with and press OK when you are done.");
     okButton = new QPushButton("OK");
     cancelButton = new QPushButton("Cancel");
@@ -31,11 +30,8 @@ AddDialog::AddDialog(QWidget *parent) :
     mainLayout->addLayout(gLayout);
     setLayout(mainLayout);
 
-    connect(okButton, SIGNAL(clicked()),
-            this, SLOT(fireTimer()));
-
-    connect(cancelButton, SIGNAL(clicked()),
-            this, SLOT(reject()));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(fireTimer()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
     setFixedSize(200, 200);
     setWindowTitle(tr("Add a Device"));
@@ -44,12 +40,11 @@ AddDialog::AddDialog(QWidget *parent) :
 
 AddDialog::~AddDialog()
 {
-    qDebug() << "destroy the AddDialog!";
 }
 
 void AddDialog::setCopyDroid(CopyDroid *copyDroid)
 {
-    copyDroid = copyDroid;
+    this->copyDroid = copyDroid;
     copyDroid->PostLinkRequest("Windows7");
 }
 
@@ -61,40 +56,41 @@ void AddDialog::setLinkRequestValueText(QString value)
 void AddDialog::fireTimer()
 {
     okButton->setDisabled(true);
+
     progressBar = new QProgressBar();
-    progressBar->setRange(0, 10);
+    progressBar->setRange(0, 30);
     progressBar->setFixedWidth(130);
     progressBar->setAlignment(Qt::AlignCenter);
+
     gLayout->addWidget(progressBar, 2, 0, Qt::AlignCenter);
+
     connect(timer, SIGNAL(timeout()), this, SLOT(checkLinkRequestConfirmation()));
+
     timer->start(1000);
 }
 
 void AddDialog::setLinkRequestStatus(bool status)
 {
-    timer->stop();
+//    timer->stop();
     linkRequestStatus = status;
 }
 
 void AddDialog::checkLinkRequestConfirmation()
 {
-    if(count >= 10) {
+    progressBar->setValue(progressBar->value()+1);
+
+    if (progressBar->value() >= progressBar->maximum()) {
         disconnect(timer, SIGNAL(timeout()), 0, 0);
         accept();
-    } else {
-        count++;
-        progressBar->setValue(count);
-
-        copyDroid->PostLinkRequestStatus("Windows7", linkRequestValueText->text());
-
-        if (linkRequestStatus == true) {
-            progressBar->setValue(progressBar->maximum());
-            disconnect(timer, SIGNAL(timeout()), 0, 0);
-            accept();
-        } else {
-
-        }
-
-        qDebug() << "sleeping... replace this with checking for linkRequestConfirmation...";
+        timer->stop();
     }
+
+    copyDroid->PostLinkRequestStatus("Windows7", linkRequestValueText->text());
+
+    if (linkRequestStatus) {
+        progressBar->setValue(progressBar->maximum());
+        disconnect(timer, SIGNAL(timeout()), 0, 0);
+        accept();
+    }
+
 }

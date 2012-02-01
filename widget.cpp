@@ -43,11 +43,13 @@ void Widget::createTable()
 void Widget::addDevice()
 {
     AddDialog aDialog;
-    aDialog.setCopyDroid(copyDroid);
+
     connect(copyDroid, SIGNAL(linkRequestValueChanged(QString)), &aDialog, SLOT(setLinkRequestValueText(QString)));
     connect(copyDroid, SIGNAL(linkRequestStatusChanged(bool)), &aDialog, SLOT(setLinkRequestStatus(bool)));
 
-    if (aDialog.exec()) {
-        qDebug() << "zzzZZZZzzzzz!";
-    }
+    aDialog.setCopyDroid(copyDroid);
+
+    aDialog.exec();
+
+
 }

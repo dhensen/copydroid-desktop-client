@@ -6,12 +6,6 @@
 #include <QProgressBar>
 #include <copydroid.h>
 
-QT_BEGIN_NAMESPACE
-class QLabel;
-class QPushButton;
-class QLineEdit;
-QT_END_NAMESPACE
-
 class AddDialog : public QDialog
 {
     Q_OBJECT
@@ -30,7 +24,6 @@ private:
     QPushButton *cancelButton;
     CopyDroid *copyDroid;
     QTimer *timer;
-    int count;
     QProgressBar *progressBar;
     bool linkRequestStatus;
 

@@ -2,7 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include <QDebug>
+//#include <QDebug>
 #include <QClipboard>
 #include <QtSql>
 #include <copydroid.h>

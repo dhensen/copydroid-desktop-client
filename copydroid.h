@@ -11,17 +11,17 @@ class CopyDroid : public QObject
 
 public:
     CopyDroid();
-    void PostMessage(const QString &message);
-    void PostLinkRequest(const QString &uid);
-    void PostLinkRequestStatus(const QString &uid, const QString &link_request_value);
+    void PostMessage(QString message);
+    void PostLinkRequest(QString uid);
+    void PostLinkRequestStatus(QString uid, QString link_request_value);
 
 public slots:
     void ProcessLinkRequest();
     void ProcessLinkRequestStatus();
 
 signals:
-    void linkRequestValueChanged(QString value);
-    void linkRequestStatusChanged(bool status);
+    void linkRequestValueChanged(QString);
+    void linkRequestStatusChanged(bool);
 
 private:
     QNetworkReply *reply;

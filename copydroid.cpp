@@ -4,7 +4,7 @@ CopyDroid::CopyDroid()
 {
 }
 
-void CopyDroid::PostMessage(const QString &message)
+void CopyDroid::PostMessage(QString message)
 {
     QNetworkAccessManager *nam = new QNetworkAccessManager();
     QNetworkRequest *request = new QNetworkRequest(QUrl("http://copydroid.com/action.php"));
@@ -13,7 +13,7 @@ void CopyDroid::PostMessage(const QString &message)
     nam->post(*request, *postData);
 }
 
-void CopyDroid::PostLinkRequest(const QString &uid)
+void CopyDroid::PostLinkRequest(QString uid)
 {
     QNetworkAccessManager *nam = new QNetworkAccessManager();
     QNetworkRequest *request = new QNetworkRequest(QUrl("http://copydroid.com/action.php"));
@@ -43,7 +43,7 @@ void CopyDroid::ProcessLinkRequest()
     emit linkRequestValueChanged(linkRequestValue);
 }
 
-void CopyDroid::PostLinkRequestStatus(const QString &uid, const QString &link_request_value)
+void CopyDroid::PostLinkRequestStatus(QString uid, QString link_request_value)
 {
     QNetworkAccessManager *nam = new QNetworkAccessManager();
     QNetworkRequest *request = new QNetworkRequest(QUrl("http://copydroid.com/action.php"));
@@ -51,7 +51,7 @@ void CopyDroid::PostLinkRequestStatus(const QString &uid, const QString &link_re
     postData->append("action=requestLinkStatus&uid="+uid+"&link_request_value="+link_request_value);
     reply = nam->post(*request, *postData);
 
-//    connect(reply, SIGNAL(finished()), this, SLOT(ProcessLinkRequestStatus()));
+    connect(reply, SIGNAL(finished()), this, SLOT(ProcessLinkRequestStatus()));
 }
 
 void CopyDroid::ProcessLinkRequestStatus()
@@ -70,8 +70,6 @@ void CopyDroid::ProcessLinkRequestStatus()
         if (linkRequestStatusNode.hasAttribute("success")) {
             linkRequestStatus = linkRequestStatusNode.attributeNode("success").value();
         }
-    } else {
-        qDebug() << "reply finished:" << reply->isFinished();
     }
 
     bool status = (bool)(linkRequestStatus.compare("1") == 0);
