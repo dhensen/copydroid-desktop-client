@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network sql -plugin-sql-sqlite xml
+QT       += core gui network sql xml
 
 TARGET = CopyDroidTest1
 TEMPLATE = app
