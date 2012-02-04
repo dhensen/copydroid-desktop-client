@@ -11,6 +11,9 @@ Widget::Widget(QWidget *parent) :
 
     connect(clipboard, SIGNAL(dataChanged()), this, SLOT(onDataChanged()));
     connect(ui->addDeviceButton, SIGNAL(clicked()), this, SLOT(addDevice()));
+    connect(copyDroid, SIGNAL(updateDeviceList(QDomNodeList)), this, SLOT(setDevices(QDomNodeList)));
+
+    copyDroid->PostListDevices("Windows7");
 
     createTable();
 }
@@ -50,6 +53,14 @@ void Widget::addDevice()
     aDialog.setCopyDroid(copyDroid);
 
     aDialog.exec();
+}
 
-
+void Widget::setDevices(QDomNodeList list)
+{
+    qDebug() << "setDevices...";
+    int count = list.count();
+    for (int i = 0; i < count; i++) {
+        qDebug() << "setDevice";
+        ui->listWidget->addItem(list.at(i).toElement().attributeNode("uid").value());
+    }
 }

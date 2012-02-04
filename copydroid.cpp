@@ -1,35 +1,39 @@
 #include "copydroid.h"
 
-CopyDroid::CopyDroid()
+CopyDroid::CopyDroid() : nam(new QNetworkAccessManager)
 {
+
+}
+
+CopyDroid::~CopyDroid()
+{
+    delete nam;
 }
 
 void CopyDroid::PostMessage(QString message)
 {
-    QNetworkAccessManager *nam = new QNetworkAccessManager();
-    QNetworkRequest *request = new QNetworkRequest(QUrl("http://copydroid.com/action.php"));
-    QByteArray *postData = new QByteArray();
-    postData->append("action=sendMessage&message="+message);
-    nam->post(*request, *postData);
+    QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
+    QByteArray postData = QByteArray();
+    postData.append("action=sendMessage&message="+message);
+    nam->post(request, postData);
 }
 
 void CopyDroid::PostLinkRequest(QString uid)
 {
-    QNetworkAccessManager *nam = new QNetworkAccessManager();
-    QNetworkRequest *request = new QNetworkRequest(QUrl("http://copydroid.com/action.php"));
-    QByteArray *postData = new QByteArray();
-    postData->append("action=requestLink&uid="+uid);
-    reply = nam->post(*request, *postData);
+    QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
+    QByteArray postData = QByteArray();
+    postData.append("action=requestLink&uid="+uid);
+    nam->post(request, postData);
 
-    connect(reply, SIGNAL(finished()), this, SLOT(ProcessLinkRequest()));
+    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessLinkRequest(QNetworkReply*)));
 }
 
-void CopyDroid::ProcessLinkRequest()
+void CopyDroid::ProcessLinkRequest(QNetworkReply *reply)
 {
-    xmlDocument = new QDomDocument("xml");
+    QDomDocument *xmlDocument = new QDomDocument();
     xmlDocument->setContent(reply);
 
-    disconnect(reply, 0, 0, 0);
+    disconnect(nam, 0, 0, 0);
 
     QDomNodeList list = xmlDocument->elementsByTagName("LinkRequest");
 
@@ -45,21 +49,20 @@ void CopyDroid::ProcessLinkRequest()
 
 void CopyDroid::PostLinkRequestStatus(QString uid, QString link_request_value)
 {
-    QNetworkAccessManager *nam = new QNetworkAccessManager();
-    QNetworkRequest *request = new QNetworkRequest(QUrl("http://copydroid.com/action.php"));
-    QByteArray *postData = new QByteArray();
-    postData->append("action=requestLinkStatus&uid="+uid+"&link_request_value="+link_request_value);
-    reply = nam->post(*request, *postData);
+    QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
+    QByteArray postData = QByteArray();
+    postData.append("action=requestLinkStatus&uid="+uid+"&link_request_value="+link_request_value);
+    nam->post(request, postData);
 
-    connect(reply, SIGNAL(finished()), this, SLOT(ProcessLinkRequestStatus()));
+    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessLinkRequestStatus(QNetworkReply*)));
 }
 
-void CopyDroid::ProcessLinkRequestStatus()
+void CopyDroid::ProcessLinkRequestStatus(QNetworkReply *reply)
 {
-    xmlDocument = new QDomDocument("xml");
+    QDomDocument *xmlDocument = new QDomDocument();
     xmlDocument->setContent(reply);
 
-    disconnect(reply, 0, 0, 0);
+    disconnect(nam, 0, 0, 0);
 
     QString linkRequestStatus;
 
@@ -72,6 +75,27 @@ void CopyDroid::ProcessLinkRequestStatus()
         }
     }
 
-    bool status = (bool)(linkRequestStatus.compare("1") == 0);
-    emit linkRequestStatusChanged(status);
+    emit linkRequestStatusChanged(linkRequestStatus.compare("1") == 0);
+}
+
+void CopyDroid::PostListDevices(QString uid)
+{
+    QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
+    QByteArray postData = QByteArray();
+    postData.append("action=listDevices&uid="+uid);
+    nam->post(request, postData);
+
+    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessListDevices(QNetworkReply*)));
+}
+
+void CopyDroid::ProcessListDevices(QNetworkReply *reply)
+{
+    QDomDocument *xmlDocument = new QDomDocument();
+    xmlDocument->setContent(reply);
+
+    disconnect(nam, 0, 0, 0);
+
+    QDomNodeList list = xmlDocument->elementsByTagName("Device");
+
+    emit updateDeviceList(list);
 }

@@ -2,7 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
-//#include <QDebug>
+#include <QDebug>
 #include <QClipboard>
 #include <QtSql>
 #include <copydroid.h>
@@ -26,6 +26,7 @@ public:
 public slots:
     void onDataChanged();
     void addDevice();
+    void setDevices(QDomNodeList list);
 
 private:
     Ui::Widget *ui;
