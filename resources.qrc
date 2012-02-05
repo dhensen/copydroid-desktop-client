@@ -2,4 +2,7 @@
     <qresource prefix="/images/logo">
         <file>copydroid.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>copydroid.ico</file>
+    </qresource>
 </RCC>

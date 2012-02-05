@@ -4,9 +4,9 @@
 #include <QWidget>
 #include <QDebug>
 #include <QClipboard>
-#include <QtSql>
-#include <copydroid.h>
-#include <adddialog.h>
+#include <QSystemTrayIcon>
+#include "copydroid.h"
+#include "adddialog.h"
 
 namespace Ui {
     class Widget;
@@ -26,17 +26,29 @@ public slots:
     void setDevices(QDomNodeList list);
     void deleteDevice();
 
+private slots:
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+
 protected:
     void closeEvent(QCloseEvent *event);
 
 private:
     Ui::Widget *ui;
+    QUuid uuid;
     CopyDroid *copyDroid;
     QClipboard *clipboard;
-    void createTable();
+
     void readSettings();
     void writeSettings();
-    QUuid uuid;
+
+    QAction *restoreAction;
+    QAction *quitAction;
+    QMenu *trayIconMenu;
+    QSystemTrayIcon *trayIcon;
+
+    void setIcon();
+    void createActions();
+    void createTrayIcon();
 
 };
 

@@ -9,25 +9,30 @@ Widget::Widget(QWidget *parent) :
     QCoreApplication::setOrganizationDomain("copydroid.com");
     QCoreApplication::setApplicationName("CopyDroid");
 
-    ui->setupUi(this);
-    clipboard = QApplication::clipboard();
+    createActions();
+    createTrayIcon();
+    setIcon();
+
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
     readSettings();
-
     copyDroid = new CopyDroid(uuid);
 
+    clipboard = QApplication::clipboard();
     connect(clipboard, SIGNAL(dataChanged()), this, SLOT(onDataChanged()));
+
+    ui->setupUi(this);
     connect(ui->addDeviceButton, SIGNAL(clicked()), this, SLOT(addDevice()));
     connect(ui->deleteDeviceButton, SIGNAL(clicked()), this, SLOT(deleteDevice()));
     connect(copyDroid, SIGNAL(updateDeviceList(QDomNodeList)), this, SLOT(setDevices(QDomNodeList)));
 
     copyDroid->PostListDevices();
-
-    createTable();
 }
 
 Widget::~Widget()
 {
+    writeSettings();
     delete ui;
 }
 
@@ -35,20 +40,6 @@ void Widget::onDataChanged()
 {
     ui->plainTextEdit->appendPlainText(clipboard->text());
     copyDroid->PostMessage(clipboard->text());
-}
-
-void Widget::createTable()
-{
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("copydroid");
-    /*bool ok = */db.open();
-    QSqlQuery query;
-    query.exec("CREATE TABLE IF NOT EXISTS device ("
-               "device_id INTEGER NOT NULL,"
-               "device_name VARCHAR(50) NOT NULL,"
-               "device_uid VARCHAR(38) NOT NULL,"
-               "PRIMARY KEY (device_id) );");
-    db.close();
 }
 
 void Widget::addDevice()
@@ -106,6 +97,55 @@ void Widget::writeSettings()
 
 void Widget::closeEvent(QCloseEvent *event)
 {
-    writeSettings();
-    event->accept();
+    if (trayIcon->isVisible()) {
+        hide();
+        event->ignore();
+    }
+}
+
+void Widget::setIcon()
+{
+    QIcon icon = QIcon(":/copydroid.ico");
+    //setWindowIcon(icon);
+    trayIcon->setIcon(icon);
+    trayIcon->setToolTip("CopyDroid");
+    trayIcon->show();
+}
+
+void Widget::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+        break;
+    case QSystemTrayIcon::DoubleClick:
+        show();
+        /*  to put the windows in front of every other window
+            (otherwise it sits in background while its focused in taskbar) */
+        activateWindow();
+        break;
+    case QSystemTrayIcon::MiddleClick:
+        break;
+    default:
+        ;
+    }
+}
+
+void Widget::createActions()
+{
+    restoreAction = new QAction(tr("&Restore"), this);
+    connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+
+    quitAction = new QAction(tr("&Quit"), this);
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+}
+
+void Widget::createTrayIcon()
+{
+    trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(restoreAction);
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(quitAction);
+
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setContextMenu(trayIconMenu);
 }
