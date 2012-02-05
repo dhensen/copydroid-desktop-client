@@ -45,7 +45,7 @@ AddDialog::~AddDialog()
 void AddDialog::setCopyDroid(CopyDroid *copyDroid)
 {
     this->copyDroid = copyDroid;
-    copyDroid->PostLinkRequest("Windows7");
+    copyDroid->PostLinkRequest();
 }
 
 void AddDialog::setLinkRequestValueText(QString value)
@@ -71,7 +71,6 @@ void AddDialog::fireTimer()
 
 void AddDialog::setLinkRequestStatus(bool status)
 {
-//    timer->stop();
     linkRequestStatus = status;
 }
 
@@ -81,16 +80,17 @@ void AddDialog::checkLinkRequestConfirmation()
 
     if (progressBar->value() >= progressBar->maximum()) {
         disconnect(timer, SIGNAL(timeout()), 0, 0);
-        accept();
         timer->stop();
+        reject();
     }
-
-    copyDroid->PostLinkRequestStatus("Windows7", linkRequestValueText->text());
 
     if (linkRequestStatus) {
         progressBar->setValue(progressBar->maximum());
         disconnect(timer, SIGNAL(timeout()), 0, 0);
+        timer->stop();
         accept();
+    } else {
+        copyDroid->PostLinkRequestStatus(linkRequestValueText->text());
     }
 
 }

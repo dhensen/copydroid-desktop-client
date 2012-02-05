@@ -10,14 +10,14 @@ class CopyDroid : public QObject
     Q_OBJECT
 
 public:
-    CopyDroid();
+    CopyDroid(QUuid uuid);
     ~CopyDroid();
     void PostMessage(QString message);
-    void PostLinkRequest(QString uid);
-    void PostLinkRequestStatus(QString uid, QString link_request_value);
-    void PostListDevices(QString uid);
+    void PostLinkRequest();
+    void PostLinkRequestStatus(QString link_request_value);
 
 public slots:
+    void PostListDevices();
     void ProcessLinkRequest(QNetworkReply *reply);
     void ProcessLinkRequestStatus(QNetworkReply *reply);
     void ProcessListDevices(QNetworkReply *reply);
@@ -28,6 +28,7 @@ signals:
     void updateDeviceList(QDomNodeList);
 
 private:
+    QUuid uuid;
     QNetworkAccessManager *nam;
     QString linkRequestValue;
 };

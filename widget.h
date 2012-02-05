@@ -19,17 +19,25 @@ class Widget : public QWidget
 public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
-    CopyDroid *copyDroid;
-    QClipboard *clipboard;
-    void createTable();
 
 public slots:
     void onDataChanged();
     void addDevice();
     void setDevices(QDomNodeList list);
+    void deleteDevice();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::Widget *ui;
+    CopyDroid *copyDroid;
+    QClipboard *clipboard;
+    void createTable();
+    void readSettings();
+    void writeSettings();
+    QUuid uuid;
+
 };
 
 #endif // WIDGET_H

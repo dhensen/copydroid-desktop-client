@@ -27,9 +27,6 @@ private:
     QProgressBar *progressBar;
     bool linkRequestStatus;
 
-    
-signals:
-    
 public slots:
     void setLinkRequestValueText(QString value);
     void checkLinkRequestConfirmation();
