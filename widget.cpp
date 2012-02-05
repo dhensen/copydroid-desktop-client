@@ -1,10 +1,16 @@
 #include "widget.h"
 #include "ui_widget.h"
 
+QString Widget::serverName = QString("CopyDroid");
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
+    localServer = new QLocalServer(this);
+    connect(localServer, SIGNAL(newConnection()), this, SLOT(newLocalSocketConnection()));
+    localServer->listen(Widget::serverName);
+
     QCoreApplication::setOrganizationName("CopyDroid");
     QCoreApplication::setOrganizationDomain("copydroid.com");
     QCoreApplication::setApplicationName("CopyDroid");
@@ -35,6 +41,21 @@ Widget::~Widget()
     writeSettings();
     delete ui;
 }
+
+void Widget::newLocalSocketConnection()
+{
+    socket = localServer->nextPendingConnection();
+    connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadAction()));
+}
+
+void Widget::socketReadAction()
+{
+    QByteArray data = socket->readAll();
+
+    if (data == "show")
+        setVisible(true);
+}
+
 
 void Widget::onDataChanged()
 {

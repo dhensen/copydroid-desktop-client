@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QClipboard>
 #include <QSystemTrayIcon>
+#include <QLocalServer>
+#include <QLocalSocket>
 #include "copydroid.h"
 #include "adddialog.h"
 
@@ -19,8 +21,12 @@ class Widget : public QWidget
 public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
+    static QString serverName;
 
 public slots:
+    void newLocalSocketConnection();
+    void socketReadAction();
+
     void onDataChanged();
     void addDevice();
     void setDevices(QDomNodeList list);
@@ -34,6 +40,8 @@ protected:
 
 private:
     Ui::Widget *ui;
+    QLocalServer *localServer;
+    QLocalSocket *socket;
     QUuid uuid;
     CopyDroid *copyDroid;
     QClipboard *clipboard;
