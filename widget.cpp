@@ -25,15 +25,21 @@ Widget::Widget(QWidget *parent) :
     readSettings();
     copyDroid = new CopyDroid(uuid);
 
+    alienCopyValue = QString();
     clipboard = QApplication::clipboard();
     connect(clipboard, SIGNAL(dataChanged()), this, SLOT(onDataChanged()));
 
     ui->setupUi(this);
+    connect(ui->attachToDeviceButton, SIGNAL(clicked()), this, SLOT(attachToDevice()));
     connect(ui->addDeviceButton, SIGNAL(clicked()), this, SLOT(addDevice()));
-    connect(ui->deleteDeviceButton, SIGNAL(clicked()), this, SLOT(deleteDevice()));
+    connect(ui->deleteDeviceButton, SIGNAL(clicked()), this, SLOT(onDeleteDeviceClick()));
     connect(copyDroid, SIGNAL(updateDeviceList(QDomNodeList)), this, SLOT(setDevices(QDomNodeList)));
+    connect(copyDroid, SIGNAL(unlinkDevice(bool)), this, SLOT(deleteDevice(bool)));
+    connect(copyDroid, SIGNAL(newMessages(QDomNodeList)), this, SLOT(newMessages(QDomNodeList)));
 
     copyDroid->PostListDevices();
+
+    startPolling();
 }
 
 Widget::~Widget()
@@ -59,55 +65,78 @@ void Widget::socketReadAction()
 
 void Widget::onDataChanged()
 {
-    ui->plainTextEdit->appendPlainText(clipboard->text());
-    copyDroid->PostMessage(clipboard->text());
+    QString currentCopyValue = QString(clipboard->text());
+
+    if (alienCopyValue.isEmpty()) {
+        ui->plainTextEdit->appendPlainText("[empty]");
+    }
+
+    if (currentCopyValue != alienCopyValue) {
+        ui->plainTextEdit->appendPlainText(clipboard->text());
+        copyDroid->PostMessage(currentCopyValue);
+    }
+}
+
+void Widget::attachToDevice()
+{
+    AttachDialog attachDialog;
+
+    connect(copyDroid, SIGNAL(linkDevice(bool)), &attachDialog, SLOT(linkStatus(bool)));
+
+    attachDialog.setCopyDroid(copyDroid);
+
+    if(attachDialog.exec()) {
+        copyDroid->PostListDevices();
+    }
 }
 
 void Widget::addDevice()
 {
-    AddDialog aDialog;
+    AddDialog addDialog;
 
-    connect(copyDroid, SIGNAL(linkRequestValueChanged(QString)), &aDialog, SLOT(setLinkRequestValueText(QString)));
-    connect(copyDroid, SIGNAL(linkRequestStatusChanged(bool)), &aDialog, SLOT(setLinkRequestStatus(bool)));
+    connect(copyDroid, SIGNAL(linkRequestValueChanged(QString)), &addDialog, SLOT(setLinkRequestValueText(QString)));
+    connect(copyDroid, SIGNAL(linkRequestStatusChanged(bool)), &addDialog, SLOT(setLinkRequestStatus(bool)));
 
-    aDialog.setCopyDroid(copyDroid);
+    addDialog.setCopyDroid(copyDroid);
 
-    if(aDialog.exec()) {
+    if(addDialog.exec()) {
         copyDroid->PostListDevices();
-    } else {
-        qDebug("Rejected adding a device, deal with it.");
     }
 }
 
 void Widget::setDevices(QDomNodeList list)
 {
-    qDebug() << "setDevices...";
-
     ui->listWidget->clear();
 
     int count = list.count();
     for (int i = 0; i < count; i++) {
         QListWidgetItem *item = new QListWidgetItem(list.at(i).toElement().attributeNode("uid").value(), ui->listWidget);
-        item->setData(Qt::UserRole, list.at(i).toElement().attributeNode("id").value());
+        item->setData(Qt::UserRole, list.at(i).toElement().attributeNode("uid").value());
 
 //        ui->listWidget->addItem(list.at(i).toElement().attributeNode("uid").value());
     }
 }
 
-void Widget::deleteDevice()
+void Widget::onDeleteDeviceClick()
 {
-    QListWidgetItem *item = ui->listWidget->currentItem();
-    if (item != NULL) {
+    deleteItem = ui->listWidget->currentItem();
+    if (deleteItem != NULL) {
         // post delete item to copydroid.com/action.php
-        delete item;
+        copyDroid->PostUnlinkDevice(deleteItem->data(Qt::UserRole).toString());
     }
+}
+
+void Widget::deleteDevice(bool doDelete)
+{
+    if (doDelete && deleteItem != NULL)
+        delete deleteItem;
 }
 
 void Widget::readSettings()
 {
     QSettings settings;
     uuid = QUuid(settings.value("uuid", QUuid::createUuid().toString()).toString());
-    qDebug() << uuid.toString();
+//    qDebug() << uuid.toString();
 }
 
 void Widget::writeSettings()
@@ -169,4 +198,25 @@ void Widget::createTrayIcon()
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
+}
+
+void Widget::startPolling()
+{
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(poll()));
+    timer->start(10000);
+}
+
+void Widget::poll()
+{
+    copyDroid->PollLatestMessages();
+}
+
+void Widget::newMessages(QDomNodeList list)
+{
+    if (!list.isEmpty()) {
+        QDomElement message = list.at(0).toElement();
+        alienCopyValue = message.text();
+        clipboard->setText(alienCopyValue);
+    }
 }

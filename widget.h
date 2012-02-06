@@ -2,13 +2,13 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include <QDebug>
 #include <QClipboard>
 #include <QSystemTrayIcon>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include "copydroid.h"
 #include "adddialog.h"
+#include "attachdialog.h"
 
 namespace Ui {
     class Widget;
@@ -28,12 +28,16 @@ public slots:
     void socketReadAction();
 
     void onDataChanged();
+    void attachToDevice();
     void addDevice();
     void setDevices(QDomNodeList list);
-    void deleteDevice();
+    void onDeleteDeviceClick();
+    void deleteDevice(bool doDelete);
+    void newMessages(QDomNodeList list);
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void poll();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -45,6 +49,7 @@ private:
     QUuid uuid;
     CopyDroid *copyDroid;
     QClipboard *clipboard;
+    QString alienCopyValue;
 
     void readSettings();
     void writeSettings();
@@ -57,6 +62,11 @@ private:
     void setIcon();
     void createActions();
     void createTrayIcon();
+
+    QTimer *timer;
+    void startPolling();
+
+    QListWidgetItem *deleteItem;
 
 };
 

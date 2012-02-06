@@ -13,11 +13,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp \
     copydroid.cpp \
-    adddialog.cpp
+    adddialog.cpp \
+    attachdialog.cpp
 
 HEADERS  += widget.h \
     copydroid.h \
-    adddialog.h
+    adddialog.h \
+    attachdialog.h
 
 FORMS    += widget.ui
 

@@ -1,8 +1,8 @@
 #ifndef ADDDIALOG_H
 #define ADDDIALOG_H
 
-#include <QtGui>
 #include <QDialog>
+#include <QtGui>
 #include <QProgressBar>
 #include <copydroid.h>
 
