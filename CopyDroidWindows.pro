@@ -6,7 +6,7 @@
 
 QT       += core gui network sql xml
 
-TARGET = CopyDroidTest1
+TARGET = copydroid
 TEMPLATE = app
 
 
