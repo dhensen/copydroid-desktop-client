@@ -14,7 +14,7 @@ void CopyDroid::PostMessage(QString message)
 {
     QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
     QByteArray postData = QByteArray();
-    postData.append("action=sendMessage&uid="+uuid.toString()+"&message="+message);
+    postData.append("action=sendMessage&uid="+uuid.toString().mid(1,36)+"&message="+message);
     nam->post(request, postData);
 }
 
@@ -22,7 +22,7 @@ void CopyDroid::PostLinkRequest()
 {
     QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
     QByteArray postData = QByteArray();
-    postData.append("action=requestLink&uid="+uuid.toString());
+    postData.append("action=requestLink&uid="+uuid.toString().mid(1,36));
     nam->post(request, postData);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessLinkRequest(QNetworkReply*)));
@@ -51,7 +51,7 @@ void CopyDroid::PostLinkRequestStatus(QString link_request_value)
 {
     QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
     QByteArray postData = QByteArray();
-    postData.append("action=requestLinkStatus&uid="+uuid.toString()+"&link_request_value="+link_request_value);
+    postData.append("action=requestLinkStatus&uid="+uuid.toString().mid(1,36)+"&link_request_value="+link_request_value);
     nam->post(request, postData);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessLinkRequestStatus(QNetworkReply*)));
@@ -82,7 +82,7 @@ void CopyDroid::PostListDevices()
 {
     QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
     QByteArray postData = QByteArray();
-    postData.append("action=listDevices&uid="+uuid.toString());
+    postData.append("action=listDevices&uid="+uuid.toString().mid(1,36));
     nam->post(request, postData);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessListDevices(QNetworkReply*)));
@@ -104,7 +104,7 @@ void CopyDroid::PostUnlinkDevice(QString uid)
 {
     QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
     QByteArray postData = QByteArray();
-    postData.append("action=unlinkDevice&uid="+uuid.toString()+"&uid2="+uid);
+    postData.append("action=unlinkDevice&uid="+uuid.toString().mid(1,36)+"&uid2="+uid);
     nam->post(request, postData);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessUnlinkDevice(QNetworkReply*)));
@@ -134,7 +134,7 @@ void CopyDroid::PollLatestMessages()
 {
     QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
     QByteArray postData = QByteArray();
-    postData.append("action=latestMessages&uid="+uuid.toString());
+    postData.append("action=latestMessages&uid="+uuid.toString().mid(1,36));
     nam->post(request, postData);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessLatestMessage(QNetworkReply*)));
@@ -156,7 +156,7 @@ void CopyDroid::PostLinkDevice(QString link_request_value)
 {
     QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
     QByteArray postData = QByteArray();
-    postData.append("action=linkDevice&uid="+uuid.toString()+"&link_request_value="+link_request_value);
+    postData.append("action=linkDevice&uid="+uuid.toString().mid(1,36)+"&link_request_value="+link_request_value);
     nam->post(request, postData);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ProcessLinkDevice(QNetworkReply*)));

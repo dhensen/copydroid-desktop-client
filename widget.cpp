@@ -15,6 +15,8 @@ Widget::Widget(QWidget *parent) :
     QCoreApplication::setOrganizationDomain("copydroid.com");
     QCoreApplication::setApplicationName("CopyDroid");
 
+    qDebug() << QApplication::applicationDirPath();
+
     createActions();
     createTrayIcon();
     setIcon();
@@ -67,9 +69,9 @@ void Widget::onDataChanged()
 {
     QString currentCopyValue = QString(clipboard->text());
 
-    if (alienCopyValue.isEmpty()) {
-        ui->plainTextEdit->appendPlainText("[empty]");
-    }
+    //    if (alienCopyValue.isEmpty()) {
+    //        ui->plainTextEdit->appendPlainText("[empty]");
+    //    }
 
     if (currentCopyValue != alienCopyValue) {
         ui->plainTextEdit->appendPlainText(clipboard->text());
@@ -134,15 +136,16 @@ void Widget::deleteDevice(bool doDelete)
 
 void Widget::readSettings()
 {
-    QSettings settings;
-    uuid = QUuid(settings.value("uuid", QUuid::createUuid().toString()).toString());
-//    qDebug() << uuid.toString();
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
+
+    // remove curly braces from the UUID
+    uuid = QUuid(settings.value("uuid", QUuid::createUuid().toString().mid(1,36)).toString());
 }
 
 void Widget::writeSettings()
 {
-    QSettings settings;
-    settings.setValue("uuid", uuid.toString());
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    settings.setValue("uuid", uuid.toString().mid(1,36));
 }
 
 void Widget::closeEvent(QCloseEvent *event)
