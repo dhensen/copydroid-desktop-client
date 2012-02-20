@@ -9,6 +9,7 @@
 #include "copydroid.h"
 #include "adddialog.h"
 #include "attachdialog.h"
+#include "osrecognizer.h"
 
 namespace Ui {
     class Widget;
@@ -47,7 +48,7 @@ private:
     QLocalServer *localServer;
     QLocalSocket *socket;
     QUuid uuid;
-    CopyDroid *copyDroid;
+    CopyDroid *copydroid;
     QClipboard *clipboard;
     QString previousCopyValue;
     QString alienCopyValue;

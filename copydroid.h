@@ -18,6 +18,7 @@ public:
     void PostUnlinkDevice(QString uid);
     void PollLatestMessages();
     void PostLinkDevice(QString link_request_value);
+    void PostRegisterDevice(QString device_name);
 
 public slots:
     void PostListDevices();

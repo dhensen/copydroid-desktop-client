@@ -23,7 +23,8 @@ Widget::Widget(QWidget *parent) :
             this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
     readSettings();
-    copyDroid = new CopyDroid(uuid);
+    copydroid = new CopyDroid(uuid);
+    copydroid->PostRegisterDevice(OSRecognizer::getOperatingSystem());
 
     previousCopyValue = QString(">@#!PrEvIoUsCoPyVaLuE!#@<");
     alienCopyValue = QString(">@#!AlIeNCoPyVaLuE!#@<");
@@ -34,11 +35,11 @@ Widget::Widget(QWidget *parent) :
     connect(ui->attachToDeviceButton, SIGNAL(clicked()), this, SLOT(attachToDevice()));
     connect(ui->addDeviceButton, SIGNAL(clicked()), this, SLOT(addDevice()));
     connect(ui->deleteDeviceButton, SIGNAL(clicked()), this, SLOT(onDeleteDeviceClick()));
-    connect(copyDroid, SIGNAL(updateDeviceList(QDomNodeList)), this, SLOT(setDevices(QDomNodeList)));
-    connect(copyDroid, SIGNAL(unlinkDevice(bool)), this, SLOT(deleteDevice(bool)));
-    connect(copyDroid, SIGNAL(newMessages(QDomNodeList)), this, SLOT(newMessages(QDomNodeList)));
+    connect(copydroid, SIGNAL(updateDeviceList(QDomNodeList)), this, SLOT(setDevices(QDomNodeList)));
+    connect(copydroid, SIGNAL(unlinkDevice(bool)), this, SLOT(deleteDevice(bool)));
+    connect(copydroid, SIGNAL(newMessages(QDomNodeList)), this, SLOT(newMessages(QDomNodeList)));
 
-    copyDroid->PostListDevices();
+    copydroid->PostListDevices();
 
     startPolling();
 }
@@ -72,7 +73,7 @@ void Widget::onDataChanged()
     // AND it must not be the same as the previousCopyValue
     if (currentCopyValue.compare(alienCopyValue) != 0 && currentCopyValue.compare(previousCopyValue) != 0) {
         ui->plainTextEdit->appendPlainText(clipboard->text());
-        copyDroid->PostMessage(currentCopyValue);
+        copydroid->PostMessage(currentCopyValue);
         previousCopyValue = currentCopyValue;
     }
 }
@@ -81,12 +82,12 @@ void Widget::attachToDevice()
 {
     AttachDialog attachDialog;
 
-    connect(copyDroid, SIGNAL(linkDevice(bool)), &attachDialog, SLOT(linkStatus(bool)));
+    connect(copydroid, SIGNAL(linkDevice(bool)), &attachDialog, SLOT(linkStatus(bool)));
 
-    attachDialog.setCopyDroid(copyDroid);
+    attachDialog.setCopyDroid(copydroid);
 
     if(attachDialog.exec()) {
-        copyDroid->PostListDevices();
+        copydroid->PostListDevices();
     }
 }
 
@@ -94,13 +95,13 @@ void Widget::addDevice()
 {
     AddDialog addDialog;
 
-    connect(copyDroid, SIGNAL(linkRequestValueChanged(QString)), &addDialog, SLOT(setLinkRequestValueText(QString)));
-    connect(copyDroid, SIGNAL(linkRequestStatusChanged(bool)), &addDialog, SLOT(setLinkRequestStatus(bool)));
+    connect(copydroid, SIGNAL(linkRequestValueChanged(QString)), &addDialog, SLOT(setLinkRequestValueText(QString)));
+    connect(copydroid, SIGNAL(linkRequestStatusChanged(bool)), &addDialog, SLOT(setLinkRequestStatus(bool)));
 
-    addDialog.setCopyDroid(copyDroid);
+    addDialog.setCopyDroid(copydroid);
 
     if(addDialog.exec()) {
-        copyDroid->PostListDevices();
+        copydroid->PostListDevices();
     }
 }
 
@@ -122,7 +123,7 @@ void Widget::onDeleteDeviceClick()
     deleteItem = ui->listWidget->currentItem();
     if (deleteItem != NULL) {
         // post delete item to copydroid.com/action.php
-        copyDroid->PostUnlinkDevice(deleteItem->data(Qt::UserRole).toString());
+        copydroid->PostUnlinkDevice(deleteItem->data(Qt::UserRole).toString());
     }
 }
 
@@ -210,7 +211,7 @@ void Widget::startPolling()
 
 void Widget::poll()
 {
-    copyDroid->PollLatestMessages();
+    copydroid->PollLatestMessages();
 }
 
 void Widget::newMessages(QDomNodeList list)

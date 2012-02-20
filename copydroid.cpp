@@ -181,3 +181,11 @@ void CopyDroid::ProcessLinkDevice(QNetworkReply *reply)
 
     emit linkDevice(linkRequestStatus.compare("1") == 0);
 }
+
+void CopyDroid::PostRegisterDevice(QString device_name)
+{
+    QNetworkRequest request = QNetworkRequest(QUrl("http://copydroid.com/action.php"));
+    QByteArray postData = QByteArray();
+    postData.append("action=registerDevice&uid="+uuid.toString().mid(1,36)+"&device_name="+device_name);
+    nam->post(request, postData);
+}

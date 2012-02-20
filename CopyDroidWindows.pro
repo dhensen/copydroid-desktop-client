@@ -14,12 +14,14 @@ SOURCES += main.cpp\
         widget.cpp \
     copydroid.cpp \
     adddialog.cpp \
-    attachdialog.cpp
+    attachdialog.cpp \
+    osrecognizer.cpp
 
 HEADERS  += widget.h \
     copydroid.h \
     adddialog.h \
-    attachdialog.h
+    attachdialog.h \
+    osrecognizer.h
 
 FORMS    += widget.ui
 
