@@ -111,7 +111,7 @@ void Widget::setDevices(QDomNodeList list)
 
     int count = list.count();
     for (int i = 0; i < count; i++) {
-        QListWidgetItem *item = new QListWidgetItem(list.at(i).toElement().attributeNode("uid").value(), ui->listWidget);
+        QListWidgetItem *item = new QListWidgetItem(list.at(i).toElement().attributeNode("name").value(), ui->listWidget);
         item->setData(Qt::UserRole, list.at(i).toElement().attributeNode("uid").value());
 
 //        ui->listWidget->addItem(list.at(i).toElement().attributeNode("uid").value());
