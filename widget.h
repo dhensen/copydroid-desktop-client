@@ -49,6 +49,7 @@ private:
     QUuid uuid;
     CopyDroid *copyDroid;
     QClipboard *clipboard;
+    QString previousCopyValue;
     QString alienCopyValue;
 
     void readSettings();

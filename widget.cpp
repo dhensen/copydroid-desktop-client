@@ -15,8 +15,6 @@ Widget::Widget(QWidget *parent) :
     QCoreApplication::setOrganizationDomain("copydroid.com");
     QCoreApplication::setApplicationName("CopyDroid");
 
-    qDebug() << QApplication::applicationDirPath();
-
     createActions();
     createTrayIcon();
     setIcon();
@@ -27,7 +25,8 @@ Widget::Widget(QWidget *parent) :
     readSettings();
     copyDroid = new CopyDroid(uuid);
 
-    alienCopyValue = QString();
+    previousCopyValue = QString(">@#!PrEvIoUsCoPyVaLuE!#@<");
+    alienCopyValue = QString(">@#!AlIeNCoPyVaLuE!#@<");
     clipboard = QApplication::clipboard();
     connect(clipboard, SIGNAL(dataChanged()), this, SLOT(onDataChanged()));
 
@@ -69,13 +68,12 @@ void Widget::onDataChanged()
 {
     QString currentCopyValue = QString(clipboard->text());
 
-    //    if (alienCopyValue.isEmpty()) {
-    //        ui->plainTextEdit->appendPlainText("[empty]");
-    //    }
-
-    if (currentCopyValue != alienCopyValue) {
+    // if the current clipboard text is not the same as the alienCopyValue then we copy/pasted something ourselves!
+    // AND it must not be the same as the previousCopyValue
+    if (currentCopyValue.compare(alienCopyValue) != 0 && currentCopyValue.compare(previousCopyValue) != 0) {
         ui->plainTextEdit->appendPlainText(clipboard->text());
         copyDroid->PostMessage(currentCopyValue);
+        previousCopyValue = currentCopyValue;
     }
 }
 
