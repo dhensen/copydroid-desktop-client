@@ -37,6 +37,10 @@
   <property name="windowTitle">
    <string>CopyDroid</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/copydroid.ico</normaloff>:/copydroid.ico</iconset>
+  </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
   </property>
@@ -133,7 +137,7 @@
          <item row="0" column="0" colspan="3">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>This page shows your devices that are linked and ready for using CopyDroid. To add a new device press the &quot;Add Device&quot; button and follow instructions.</string>
+            <string>This page shows your devices that are linked and ready for using Copydroid. To add a new device press the &quot;Add Device&quot; button and follow instructions.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -193,7 +197,7 @@
          <item row="0" column="0">
           <widget class="QCheckBox" name="checkBox">
            <property name="text">
-            <string>Start CopyDroid on system startup</string>
+            <string>Start Copydroid on system startup</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -209,6 +213,8 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

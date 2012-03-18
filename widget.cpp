@@ -72,7 +72,8 @@ void Widget::onDataChanged()
     // if the current clipboard text is not the same as the alienCopyValue then we copy/pasted something ourselves!
     // AND it must not be the same as the previousCopyValue
     if (currentCopyValue.compare(alienCopyValue) != 0 && currentCopyValue.compare(previousCopyValue) != 0) {
-        ui->plainTextEdit->appendPlainText(clipboard->text());
+//        ui->plainTextEdit->appendPlainText(currentCopyValue);
+        ui->plainTextEdit->setPlainText(currentCopyValue);
         copydroid->PostMessage(currentCopyValue);
         previousCopyValue = currentCopyValue;
     }
